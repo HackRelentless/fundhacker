@@ -1,0 +1,61 @@
+
+version: '3.5'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=fundhacker
+      - POSTGRES_PASSWORD=fundhackerpass
+      - POSTGRES_DB=postgres
+    #   - PGDATA=/data/postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    # networks:
+    #   - postgres
+    restart: unless-stopped
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    # volumes:
+    #   - pgadmin:/root/.pgadmin
+    ports:
+      - "5050:80"
+    # networks:
+    #   - postgres
+    depends_on: 
+      - postgres
+    restart: unless-stopped
+
+  backend:
+    build: ./backend/.
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+        - "4201:5000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend/.
+    volumes:
+      - ./frontend:/usr/src/app
+    # volumes:
+    #     - "./frontend:/frontend"
+    #     - "/frontend/node_modules"
+    ports:
+        - "4202:8080"
+    restart: unless-stopped
+
+# networks:
+#   postgres:
+#     driver: bridge
+
+volumes:
+    postgres-data:
+    backend:
+    frontend:
