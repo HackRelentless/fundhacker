@@ -1,11 +1,16 @@
-FROM node
-
-WORKDIR /usr/src/app
-
+# develop stage
+FROM node as develop-stage
+WORKDIR /app
 COPY package*.json ./
-
 RUN npm install
-
 COPY . .
 
-CMD npm run-script serve
+# build stage
+FROM develop-stage as build-stage
+RUN npm run build
+
+# production stage
+FROM nginx as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

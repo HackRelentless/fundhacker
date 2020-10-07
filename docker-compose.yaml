@@ -41,7 +41,10 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./frontend/.
+    # build: ./frontend/.
+    build:
+      context: ./frontend/.
+      target: 'develop-stage'
     volumes:
       - ./frontend:/usr/src/app
     # volumes:
@@ -50,6 +53,7 @@ services:
     ports:
         - "4202:8080"
     restart: unless-stopped
+    command: /bin/sh -c "npm run-script serve"
 
 # networks:
 #   postgres:
